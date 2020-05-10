@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="{__STATIC_PATH}admin/lib/layui-v2.5.4/css/layui.css" media="all">
+    <link rel="stylesheet" href="{__STATIC_PATH}admin/css/public.css" media="all">
+    <style>
+        .inoutCls {
+            height: 22px;
+            line-height: 22px;
+            padding: 0 5px;
+            font-size: 12px;
+            background-color: #1E9FFF;
+            max-width: 80px;
+            border: none;
+            color: #fff;
+            margin-left: 10px;
+            display: inline-block;
+            white-space: nowrap;
+            text-align: center;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <button type="button" class="layui-btn add">添 加</button>
+
+        <div class="layui-form" style="margin-top: 20px;">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="40">
+                    <col width="60">
+                    <col width="100">
+                    <col width="130">
+                    <col width="130">
+                    <col width="70">
+                    <col width="70">
+                    <col width="185">
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>id</th>
+                    <th>标题名称</th>
+                    <th>排序</th>
+                    <th class="text-center">创建时间</th>
+                    <th class="text-center">更新时间</th>
+                    <th class="text-center">操作人</th>
+                    <th class="text-center">状 态</th>
+                    <th>操作管理</th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach $categorys['data'] as $key => $val}
+                <tr>
+                    <td>{$val['id']}</td>
+                    <td>{$val['name']}</td>
+                    <td>
+                        <div class="layui-input-inline">
+                            <input type="text" value="{$val['listorder']}" data-id="{$val['id']}"
+                                   class="changeSort layui-input">
+                        </div>
+                    </td>
+                    <td>{$val['create_time']}</td>
+                    <td>{$val['update_time']}</td>
+                    <td>{$val['operate_user']}</td>
+                    <td data-id="{$val['id']}"><input type="checkbox" {if $val['status']==1}checked{/if} name="status"
+                        lay-skin="switch" lay-filter="switchStatus" lay-text="ON|OFF">
+                    </td>
+                    <td>
+                        <a class="layui-btn layui-btn-xs layui-btn-default data-count-default" data-ptype="1"
+                           lay-event="delete" href="{:url('index',['pid'=>$val['id']])}">获取子栏目({$val['childCount']})</a>
+                        <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete del-child" data-ptype="1"
+                           lay-event="delete" data-id="{$val['id']}">删除当前分类(包括子分类)</a>
+                    </td>
+                </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+        <div id="pages"></div>
+    </div>
+
+</div>
+<script src="{__STATIC_PATH}admin/lib/jquery-3.4.1/jquery-3.4.1.min.js"></script>
+<script src="{__STATIC_PATH}admin/lib/layui-v2.5.4/layui.js" charset="utf-8"></script>
+<script src="{__STATIC_PATH}admin/js/common.js?v5" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['form', 'laypage'], function () {
+        var showtime = 1.5 * 1000;
+        var form = layui.form
+            , laypage = layui.laypage;
+
+        laypage.render({ //分页
+            elem: 'pages'
+            , count: {$categorys['total']}
+            , limit: {$categorys['per_page']}
+            , curr: {$categorys['current_page']}
+            , last: {$categorys['last_page']}
+            , theme: '#FFB800'
+            , jump: function (obj, first) {
+                if (!first) {
+                    if ({$pid}) {
+                        location.href = "?pid=" + {$pid} + "&page=" + obj.curr;
+                        return;
+                    }
+                    location.href = "?page=" + obj.curr;
+                }
+            }
+        });
+
+
+        // 添加 分类
+        $('.add').on('click', function () {
+            // layObj.dialog('dialog.html')
+            window.location.href = 'add.html';
+        });
+
+        //监听状态 更改
+        form.on('switch(switchStatus)', function (obj) {
+            console.log(1);
+            let id = obj.othis.parent().attr('data-id');
+            let status = obj.elem.checked ? 1 : 0;
+            $.ajax({
+                url: '{:url("category/status")}?id=' + id + '&status=' + status,
+                success: (res) => {
+                    if (res.status == 1) {
+                        layer.msg("状态修改成功", {time: showtime}, function () {
+                            location.replace(location.href)
+                        });
+                    } else {
+                        layer.msg("状态修改失败");
+                    }
+                }
+            });
+            return false;
+        });
+
+
+        function editCls(that, id, type) { // 分类修改  type 是 1 顶级  2级  3级
+            let name = $(that).val();
+            if (!name && (type == 1 || type == 2)) {
+                return layObj.msg('分类名称不能为空')
+            }
+            if (!name && type == 3) { // 演示 应该放到修改回调中  进行处理
+                return $(that).parent().remove()
+            }
+            let url = '{:url("admin/edit")}?id=' + id + '&name=' + name
+            layObj.get(url, (res) => {
+                if (name && res) {
+                    $(that).val(name)
+                }
+            })
+            $.ajax({
+                url: '{:url("admin/edit")}?id=' + id + '&name=' + name,
+                success(res) {
+                    if (name && res) {
+                        $(that).val(name)
+                    }
+                }
+            })
+        }
+
+        // 删除二级分类
+        $('.del-child').on('click', function () {
+            let ptype = $(this).attr('data-ptype'); // fu
+            let id = $(this).attr('data-id'); // fu
+            let msg = '';
+            if (ptype == 1) { // 等级类目
+                msg = '一';
+            } else if (ptype == 2) {
+                msg = '二';
+            }
+            layObj.box(`是否删除当前分类`, () => {
+                let url = '{:url("category/del")}?id=' + id
+                layObj.get(url, (res) => {
+                    if (res.status == 1) {
+                        layer.msg("删除成功", {time: showtime}, function () {
+                            location.replace(location.href)
+                        });
+                    } else {
+                        layer.msg("删除失败");
+                    }
+                })
+
+            })
+        })
+
+        $('.changeSort').on('change', function () {
+            let id = $(this).attr('data-id');
+            let val = $(this).val();
+
+            if (!val) {
+                return;
+            }
+            let url = '{:url("category/listorder")}?id=' + id + '&listorder=' + val;
+            layObj.get(url, function (res) {
+                if (res.status == 1) {
+                    layer.msg("排序成功", {time: showtime}, function () {
+                        location.replace(location.href)
+                    });
+                } else {
+                    layer.msg("排序失败");
+                }
+            })
+
+        })
+
+
+    })
+</script>
+</body>
+</html>

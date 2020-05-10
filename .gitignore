@@ -1,0 +1,7 @@
+/.idea
+/.vscode
+/vendor
+*.log
+.env
+/shop/public/uploads
+/runtime
