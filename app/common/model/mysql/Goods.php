@@ -95,8 +95,8 @@ class Goods extends BaseModel
             ->where("status", "=", config("status.mysql.table_normal"))
             ->order($order)
             ->paginate($num);
-        dump($list);
-        die;
+//        dump($list);
+//        die;
         return $list;
     }
 

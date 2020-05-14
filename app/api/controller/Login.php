@@ -21,6 +21,7 @@ class Login extends BaseController
         $code = input("param.code", "", "intval");
         $type = input("param.type", "", "intval");
 
+
         $data = [
             'phone_number' => $phoneNumber,
             'code' => $code,

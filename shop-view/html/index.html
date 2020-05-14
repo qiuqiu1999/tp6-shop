@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
@@ -10,19 +11,10 @@
           content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 </head>
+
 <body id="list-cont">
-<div class="site-nav-bg">
-    <div class="site-nav w1200">
-        <p class="sn-back-home">
-            <i class="layui-icon layui-icon-home"></i>
-            <a href="#">首页</a>
-        </p>
-        <div class="sn-quick-menu">
-            <div class="login"><a href="login.html">登录</a></div>
-            <div class="sp-cart"><a href="shopcart.html">购物车</a><span>2</span></div>
-        </div>
-    </div>
-</div>
+<!-- 顶部导航 -->
+<script src="common/_header.js"></script>
 
 
 <div class="header">
@@ -474,6 +466,7 @@
         }
         carousel.render(option);
 
+        // 商品分类
         $.ajax({
             type: "get",
             dataType: "json",
@@ -502,16 +495,32 @@
                     }
                     $('.normal-nav').html(str);
                 }
-                // var dataList = data['data']['data'];
-                // if (data['code'] == 1 && dataList.length > 0) {
-                //     $('.list-item').html('');
-                //     var str = '';
-                //     for (var i in dataList) {
-                //     }
-                //     $('.list-item').html(str);
-                //
-                //
-                // }
+            }
+        });
+
+        // 没有写推荐商品接口, 暂时使用商品列表代替
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: 'http://shop.qiujincheng.top/api/lists',
+            data: '',
+            success: function (e) {
+                // console.log(e);
+                var data = e;
+                if (data.status == 1) {
+                    var str = '';
+                    if (!data.result.data) {
+                        return false;
+                    }
+                    for (var i in data.result.data) {
+                        str += '<div class="list-item">';
+                        str += '<a href="/html/details.html?id=' + data.result.data[i]['id'] +'"><img src="' + data.result.data[i]['image'] +'"></a>';
+                        str += '<p>' + data.result.data[i]['title'] +'</p>';
+                        str += '<span>￥' + data.result.data[i]['price'] +'</span>';
+                        str += '</div>';
+                    }
+                    $('.product-item-box').html(str);
+                }
             }
         });
     });

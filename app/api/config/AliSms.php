@@ -1,9 +1,9 @@
 <?php
 return [
     'host' => '',
-    'access_key_id' => 'LTAI3j2ye9UH3q3X',
-    'access_key_secret' => 'JH99Iykf3FGPJYzUDJYwFWuqVjAAK8',
-    'region_id' => 'cn-hangzhou',
-    'template_code' => 'SMS_166755009',
-    'sign_name' => '程序学习网',
+    'access_key_id' => env('ACCESS_KEY_ID', ''),
+    'access_key_secret' => env('ACCESS_KEY_SECRET', ''),
+    'region_id' => env('REGION_ID', 'cn-hangzhou'),
+    'template_code' => env('TEMPLATE_CODE', ''),
+    'sign_name' => env('SIGN_NAME', '')
 ];

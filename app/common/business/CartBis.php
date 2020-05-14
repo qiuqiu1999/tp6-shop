@@ -59,6 +59,7 @@ class CartBis extends BaseBis
                 }
             } else {
                 $getRes = Cache::hGetAll(Key::userCart($userId));
+//                var_dump($getRes);exit;
             }
         } catch (\Exception $e) {
             return [];

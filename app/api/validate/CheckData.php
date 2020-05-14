@@ -18,7 +18,7 @@ class CheckData extends Validate
     protected $message = [
         'username' => '用户名必须',
         'phone_number' => '手机号不能为空',
-        'code.require' => '短信验证码必须',
+        'code.require' => '短信验证码必须1',
         'code.number' => '短信验证码必须为数字',
         'code.min' => '短信验证码长度不得低于4',
         'type.require' => '类型必须',
