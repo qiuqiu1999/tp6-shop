@@ -30,9 +30,9 @@ return [
             // 驱动方式
             'type'   => 'redis',
             // 服务器地址
-            'host' => '120.77.159.232',
-            'port' => 7481,
-            'password' => 'lswlcccom',
+            'host' => '',
+            'port' => ,
+            'password' => '',
         ],
     ],
 ];
