@@ -30,9 +30,9 @@ return [
             // 驱动方式
             'type'   => 'redis',
             // 服务器地址
-            'host' => '',
-            'port' => ,
-            'password' => '',
+            'host' => Env::get('redis.redis_host', '127.0.0.1'),
+            'port' => Env::get('redis.redis_port', 6379),
+            'password' => Env::get('redis.redis_password', ''),
         ],
     ],
 ];

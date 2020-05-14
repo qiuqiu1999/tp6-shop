@@ -19,8 +19,7 @@ document.writeln('</div>');
 
 function logout() {
     localStorage.removeItem('access_token');
-
-    // window.location.href = 'http://layui.qiujincheng.top/html/login.html';
+    window.location.href = 'http://layui.qiujincheng.top/html/login.html';
 }
 
 
