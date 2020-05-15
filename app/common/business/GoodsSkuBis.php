@@ -16,6 +16,12 @@ class GoodsSkuBis extends BaseBis
         $this->model = new GoodsSkuModel();
     }
 
+    /**
+     * 有规格商品 sku添加
+     * @param $data
+     * @return array|bool
+     * @throws \Exception
+     */
     public function saveAll($data)
     {
         if (empty($data['skus'])) {
@@ -33,6 +39,27 @@ class GoodsSkuBis extends BaseBis
 
         }
         $result = $this->model->saveAll($insertData);
+        return $result->toArray();
+    }
+
+    /**
+     * 无规格商品 sku添加
+     * @param $data
+     * @return array|bool
+     */
+    public function saveNoneSpecsSku($data)
+    {
+        if (empty($data)) {
+            return false;
+        }
+        $insertData = [
+            'goods_id' => $data['goods_id'],
+            'price' => $data['price'],
+            'cost_price' => $data['cost_price'],
+            'stock' => $data['stock'],
+            'status' => config("status.mysql.table_normal")
+        ];
+        $result = $this->model->create($insertData);
         return $result->toArray();
     }
 

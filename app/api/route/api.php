@@ -12,6 +12,8 @@ Route::rule('logout', 'Logout/logout', 'GET');
 //Route::rule('category', "Category/index");
 //
 Route::rule("lists", "mall.lists/index");
+// 推荐商品
+Route::rule("recommend", "mall.lists/recommend");
 //
 Route::rule("subcategory/:id", "category/sub");
 

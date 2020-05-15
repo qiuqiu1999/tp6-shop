@@ -36,7 +36,7 @@ class Index extends AuthBase
 
     public function read()
     {
-        $id = input("param.id", '0', 'intval');
+        $id = input("param.id", 0, 'intval');
         if (empty($id)) {
             return Show::error("参数错误");
         }

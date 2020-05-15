@@ -328,7 +328,9 @@
                 recommend_image: images('show_img'),
                 skus: skus(),
                 description: layedit.getContent(edit_index),
-                add_spec_arr: addSpecArr() // 提交的规格数据
+                add_spec_arr: addSpecArr(), // 提交的规格数据
+                price:$('#sell_price').val(),
+                cost_price:$('#market_price').val(),
             };
             console.log(goods_data);//这个data就是表单的值 包含以下值
 

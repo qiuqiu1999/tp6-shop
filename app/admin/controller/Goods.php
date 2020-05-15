@@ -27,6 +27,9 @@ class Goods extends BaseController
 
         //
         $data['category_path_id'] = $data['category_id'];
+        if (strpos($data['category_path_id'], 'undefined')) {
+            $data['category_path_id'] = trim(str_replace('undefined', '', $data['category_path_id']), ',');
+        }
         $result = explode(",", $data['category_path_id']);
         $data['category_id'] = end($result);
 
@@ -53,7 +56,7 @@ class Goods extends BaseController
 
     public function update()
     {
-        $id = input("param.id", 28, 'intval');
+        $id = input("param.id", 0, 'intval');
         // 校验数据
         $data = input("param.");
 

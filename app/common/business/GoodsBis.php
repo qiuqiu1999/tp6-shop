@@ -8,6 +8,7 @@ use app\common\lib\Key;
 use app\common\model\mysql\Goods as GoodsModel;
 use app\common\business\GoodsSkuBis;
 use app\common\business\SpecsValueBis;
+use app\common\model\mysql\GoodsSku;
 use think\facade\Cache;
 
 class GoodsBis extends BaseBis
@@ -21,6 +22,8 @@ class GoodsBis extends BaseBis
 
     public function instData($data)
     {
+//        var_dump($data);exit;
+
         // 保存商品数据
         $this->model->startTrans();
         try {
@@ -31,10 +34,18 @@ class GoodsBis extends BaseBis
 //            dd($goodsId);
 //            sku入库
             if ($data['goods_specs_type'] == 1) {
-                $goodsSkuData = [
-                    'goods_id' => $goodsId
+                $data['goods_id'] = $goodsId;
+                $res = (new GoodsSkuBis())->saveNoneSpecsSku($data);
+                if (!$res) {
+                    throw new \think\Exception("sku入库失败");
+                }
+                $goodsUpdateData = [
+                    'sku_id' => $res['id'],
                 ];
-                return true;
+                $updateResult = $this->model->updateById($goodsId, $goodsUpdateData);
+                if (!$updateResult) {
+                    throw new \think\Exception("sku回填失败");
+                }
             } elseif ($data['goods_specs_type'] == 2) {
                 $data['goods_id'] = $goodsId;
                 $res = (new GoodsSkuBis())->saveAll($data);
@@ -60,7 +71,7 @@ class GoodsBis extends BaseBis
             return true;
         } catch (\Exception $e) {
             // TODO 记录日志 $e->getMessage();
-
+            var_dump($e->getMessage());
             $this->model->rollback();
             return false;
         }
@@ -107,25 +118,33 @@ class GoodsBis extends BaseBis
         $goodsSkuBis = new GoodsSkuBis();
         // 商品数据
         $goodsSku = $goodsSkuBis->getNormalSkuAndGoods($skuId);
-
         if (!$goodsSku) {
             return [];
         }
         $goods = $goodsSku['goods'];
         // sku数据
         $skus = $goodsSkuBis->getSkuByGoodsId($goods['id']);
+
         if(!$goodsSku) {
             return [];
         }
-        $flagValue = '';
-        foreach ($skus as $sku) {
-            if ($sku['id'] == $skuId) {
-                $flagValue = $sku['specs_value_ids'];
+        $sku = [];
+        $gids = [];
+
+        //某些商品没有规格, sku只是形式上的数据不需要再查找规格
+        if (!empty($sku['specs_value_ids'])) {
+            $flagValue = '';
+            foreach ($skus as $sku) {
+                if ($sku['id'] == $skuId) {
+                    $flagValue = $sku['specs_value_ids'];
+                }
             }
+            $gids = array_column($skus, 'id', 'specs_value_ids');
+
+            // 组装sku规格
+            $sku = (new SpecsValueBis())->dealGoodsSkus($gids, $flagValue);
         }
-        $gids = array_column($skus, 'id', 'specs_value_ids');
-//        dump($goodsSku);exit;
-        $sku = (new SpecsValueBis())->dealGoodsSkus($gids, $flagValue);
+
         $result = [
             'title' => $goods['title'],
             'price' => $goodsSku['price'],
