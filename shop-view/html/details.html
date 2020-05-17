@@ -84,7 +84,8 @@
                             <div class="number-cont"><span class="cut btn">-</span><input
                                     onkeyup="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
                                     onafterpaste="if(this.value.length==1){this.value=this.value.replace(/[^1-9]/g,'')}else{this.value=this.value.replace(/\D/g,'')}"
-                                    maxlength="4" type="" name="" value="1"><span class="add btn">+</span></div>
+                                    maxlength="4" type="" name="" value="1" id="buy_num"><span class="add btn">+</span>
+                            </div>
                         </div>
                     </div>
                     <div class="choose-btns">
@@ -139,8 +140,8 @@
 <script type="text/javascript">
     layui.config({
         base: '../res/static/js/util/' //你存放新模块的目录，注意，不是layui的模块目录
-    }).use(['mm', 'jquery'], function () {
-        var mm = layui.mm, $ = layui.$;
+    }).use(['mm', 'jquery','layer'], function () {
+        var mm = layui.mm, $ = layui.$, layer = layui.layer;
         var cur = $('.number-cont input').val();
         $('.number-cont .btn').on('click', function () {
             if ($(this).hasClass('add')) {
@@ -152,9 +153,42 @@
                 }
             }
             $('.number-cont input').val(cur)
-        })
+        });
+
 
         if (id = getQueryVariable('id')) {
+
+            // 立即购买
+            $('.purchase-btn').click(function () {
+                update
+            });
+
+            // 加入购物车
+            $('.car-btn').click(function () {
+                var num = $('#buy_num').val();
+                if (!localStorage.getItem('access_token')) {
+                    alert('请先登录');
+                    window.location.href = 'login.html';
+                    return false;
+                }
+                $.ajax({
+                    type: "post",
+                    dataType: "json",
+                    url: 'http://shop.qiujincheng.top/api/Cart/add',
+                    data: {'id': id, 'num': num},
+                    headers: {
+                        "Authorization": localStorage.getItem('access_token')//此处放置请求到的用户token
+                    },
+                    success: function (data) {
+                        layer.msg(data.message);
+                    },
+
+                    error: function (msg) {
+                        console.log(msg);
+                    }
+                });
+            });
+
             // 商品详情
             $.ajax({
                 type: "get",

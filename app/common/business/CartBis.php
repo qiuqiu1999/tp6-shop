@@ -25,7 +25,7 @@ class CartBis extends BaseBis
             $get = Cache::hGet(Key::userCart($userId), $id);
             if ($get) {
                 $get = json_decode($get, true);
-                if ($goodSku['good']['stock'] < $get['num']) {
+                if ($goodSku['goods']['stock'] < $get['num']) {
                     throw new \think\Exception($goodSku['goods']['title'] . "的商品库存不足");
                 } else {
                     $data['num'] += $get['num'];
@@ -33,6 +33,7 @@ class CartBis extends BaseBis
             }
             $result = Cache::hSet(Key::userCart($userId), $id, json_encode($data));
         } catch (\Exception $e) {
+//            var_dump($e->getMessage());exit;
             return FALSE;
         }
         return $result;
