@@ -121,7 +121,7 @@ layui.define(['layer'], function (exports) {
             type: "post",
             dataType: "json",
             url: 'http://shop.qiujincheng.top/api/Cart/delete',
-            data: {'id' : e.value},
+            data: {'id' : id},
             headers: {
                 "Authorization":sessionStorage.getItem('access_token')//此处放置请求到的用户token
             },
