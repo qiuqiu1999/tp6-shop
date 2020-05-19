@@ -189,7 +189,7 @@
                     }
                     console.log(data);
                     layer.msg(data.message);
-                    localStorage.setItem('access_token', data.result['token']);
+                    sessionStorage.setItem('access_token', data.result['token']);
                     window.location.href = 'http://layui.qiujincheng.top/html/index.html';
                 },
                 error: function (msg) {

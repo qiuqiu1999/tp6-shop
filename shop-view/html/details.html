@@ -166,7 +166,7 @@
             // 加入购物车
             $('.car-btn').click(function () {
                 var num = $('#buy_num').val();
-                if (!localStorage.getItem('access_token')) {
+                if (!sessionStorage.getItem('access_token')) {
                     alert('请先登录');
                     window.location.href = 'login.html';
                     return false;
@@ -177,7 +177,7 @@
                     url: 'http://shop.qiujincheng.top/api/Cart/add',
                     data: {'id': id, 'num': num},
                     headers: {
-                        "Authorization": localStorage.getItem('access_token')//此处放置请求到的用户token
+                        "Authorization": sessionStorage.getItem('access_token')//此处放置请求到的用户token
                     },
                     success: function (data) {
                         layer.msg(data.message);
